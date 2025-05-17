@@ -128,6 +128,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv('DEBUG', 'True')
 CINETPAY_SITE_ID = os.getenv("CINETPAY_SITE_ID")
 CINETPAY_API_KEY = os.getenv("CINETPAY_API_KEY")
 CINETPAY_MERCHANT_PHONE = os.getenv("CINETPAY_MERCHANT_PHONE")
