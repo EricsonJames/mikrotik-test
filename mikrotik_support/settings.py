@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os 
 from dotenv import load_dotenv
-load_dotenv()
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
+SECRET_KEY = 'django-insecure-x5k&u=_*n@%%$ia8c*coct4a$jevp4*#(v9mz(*gk967*^t4*z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -126,19 +126,30 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CINETPAY_SITE_ID = '105894770'
+CINETPAY_API_KEY = '109361363368207de3a3c9d8.36092477'
+CINETPAY_MERCHANT_PHONE='+224624274155'
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv('DEBUG', 'True')
-CINETPAY_SITE_ID = os.getenv("CINETPAY_SITE_ID")
-CINETPAY_API_KEY = os.getenv("CINETPAY_API_KEY")
-CINETPAY_MERCHANT_PHONE = os.getenv("CINETPAY_MERCHANT_PHONE")
 
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+
+
+
+TWILIO_ACCOUNT_SID = 'AC52ff9cf6cd0a2006547d44ebf24f5f27'
+TWILIO_AUTH_TOKEN = '014f631c30a1a24b464753abd6743c8f'
+TWILIO_PHONE_NUMBER = '+17627221362'  # your Twilio sender number
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'jamessahr662@email.com'
+EMAIL_HOST_PASSWORD = 'Kenneth James662'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'jamessahr662@email.com'
+
+
 
 
 LOGIN_REDIRECT_URL = '/dashboard'
