@@ -84,6 +84,15 @@ import requests
 import json
 from .models import AccessTicket, Plan
 
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+import uuid
+import json
+import requests
+from .models import Plan, AccessTicket
+
 @login_required
 def create_ticket(request):
     if request.method == 'POST':
@@ -92,12 +101,16 @@ def create_ticket(request):
         phone_number = request.POST.get('phone_number')
 
         if not plan_id or not phone_number:
-            return render(request, 'tickets/error.html', {'message': 'Please select a plan and enter your phone number.'})
+            return render(request, 'tickets/error.html', {
+                'message': 'Please select a plan and enter your phone number.'
+            })
 
         try:
             plan = Plan.objects.get(id=plan_id)
         except Plan.DoesNotExist:
-            return render(request, 'tickets/error.html', {'message': 'Invalid plan selected.'})
+            return render(request, 'tickets/error.html', {
+                'message': 'Invalid plan selected.'
+            })
 
         ticket_code = f"{request.user.username}-{uuid.uuid4().hex[:8]}"
 
@@ -113,30 +126,30 @@ def create_ticket(request):
         # === Initiate payment ===
         api_url = "https://api-checkout.cinetpay.com/v2/payment"
         headers = {'Content-Type': 'application/json'}
-    payload = {
-    "apikey": settings.CINETPAY_API_KEY,
-    "site_id": settings.CINETPAY_SITE_ID,
-    "transaction_id": ticket_code,
-    "amount": int(plan.price),
-    "currency": "GNF",
-    "description": f"Payment for plan {plan.name}",
-    "customer_name": request.user.username,
-    "customer_surname": "N/A",
-    "customer_email": request.user.email,
-    "customer_phone_number": phone_number,
-    "notify_url": f"{settings.PRODUCTION_BASE_URL}/payment-notify/",
-    "return_url": f"{settings.PRODUCTION_BASE_URL}/payment-return/",
-    "cancel_url": f"{settings.PRODUCTION_BASE_URL}/payment-cancel/",
-    "channels": "MOBILE_MONEY"
-}
 
+        payload = {
+            "apikey": settings.CINETPAY_API_KEY,
+            "site_id": settings.CINETPAY_SITE_ID,
+            "transaction_id": ticket_code,
+            "amount": int(plan.price),  # Ensure this is an integer
+            "currency": "GNF",
+            "description": f"Payment for plan {plan.name}",
+            "customer_name": request.user.username,
+            "customer_surname": "N/A",
+            "customer_email": request.user.email,
+            "customer_phone_number": phone_number,
+            "notify_url": f"{settings.PRODUCTION_BASE_URL}/payment-notify/",
+            "return_url": f"{settings.PRODUCTION_BASE_URL}/payment-return/",
+            "cancel_url": f"{settings.PRODUCTION_BASE_URL}/payment-cancel/",
+            "channels": "MOBILE_MONEY"
+        }
 
         try:
-            print("CinetPay payload:", json.dumps(payload, indent=2))  # Debug: Log request payload
+            print("CinetPay payload:", json.dumps(payload, indent=2))  # Debug
 
             response = requests.post(api_url, headers=headers, json=payload)
             res_data = response.json()
-            print("CinetPay response:", json.dumps(res_data, indent=2))  # Debug: Log response
+            print("CinetPay response:", json.dumps(res_data, indent=2))  # Debug
 
             if res_data.get("code") == "201":
                 return redirect(res_data['data']['payment_url'])
@@ -144,16 +157,19 @@ def create_ticket(request):
                 return render(request, 'tickets/error.html', {
                     'message': f"Payment failed: {res_data.get('message', 'Unknown error.')}"
                 })
+
         except ValueError:
-            return render(request, 'tickets/error.html', {'message': 'Invalid response from payment gateway.'})
+            return render(request, 'tickets/error.html', {
+                'message': 'Invalid response from payment gateway.'
+            })
         except Exception as e:
-            return render(request, 'tickets/error.html', {'message': f"Payment request error: {e}"})
+            return render(request, 'tickets/error.html', {
+                'message': f"Payment request error: {e}"
+            })
 
     else:
         plans = Plan.objects.all()
         return render(request, 'tickets/create_tickets.html', {'plans': plans})
-
-
 
 
 
