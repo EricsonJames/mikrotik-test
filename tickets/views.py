@@ -113,21 +113,21 @@ def create_ticket(request):
         # === Initiate payment ===
         api_url = "https://api-checkout.cinetpay.com/v2/payment"
         headers = {'Content-Type': 'application/json'}
-        payload = {
+    payload = {
     "apikey": settings.CINETPAY_API_KEY,
     "site_id": settings.CINETPAY_SITE_ID,
     "transaction_id": ticket_code,
-    "amount": int(plan.price),  # Ensure this is an integer
+    "amount": int(plan.price),
     "currency": "GNF",
     "description": f"Payment for plan {plan.name}",
     "customer_name": request.user.username,
     "customer_surname": "N/A",
     "customer_email": request.user.email,
-    "customer_phone_number": phone_number,   # 🔧 <- Set YOUR number here
-    "notify_url": request.build_absolute_uri('/payment-notify/'),
-    "return_url": request.build_absolute_uri('/payment-return/'),
-    "cancel_url": request.build_absolute_uri('/payment-cancel/'),
-    "channels": "MOBILE_MONEY"  # 🔧 <- Use valid value (ALL, MOBILE_MONEY, WALLET, CREDIT_CARD)
+    "customer_phone_number": phone_number,
+    "notify_url": f"{settings.PRODUCTION_BASE_URL}/payment-notify/",
+    "return_url": f"{settings.PRODUCTION_BASE_URL}/payment-return/",
+    "cancel_url": f"{settings.PRODUCTION_BASE_URL}/payment-cancel/",
+    "channels": "MOBILE_MONEY"
 }
 
 
