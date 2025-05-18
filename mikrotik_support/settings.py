@@ -33,6 +33,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+PRODUCTION_BASE_URL = "https://mikrotik-test-production.up.railway.app"  # Replace with your real domain
+
 # Application definition
 
 INSTALLED_APPS = [
