@@ -14,7 +14,7 @@ urlpatterns = [
     path('profile/update/', views.update_profile, name='update_profile'),
     # Payment Webhooks
     path('', views.signup, name='signup'),
-path('api/verify-ticket/', views.verify_ticket, name='verify-ticket'),
+path('verify-ticket/', views.verify_ticket, name='verify-ticket'),
 
     path('payment-notify/', views.payment_notify, name='payment_notify'),
     path('payment-return/', views.payment_return, name='payment_return'),
