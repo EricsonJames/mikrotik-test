@@ -93,6 +93,15 @@ import json
 import requests
 from .models import Plan, AccessTicket
 
+from django.conf import settings
+import requests
+import json
+import uuid
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from .models import Plan, AccessTicket
+
 @login_required
 def create_ticket(request):
     if request.method == 'POST':
@@ -151,6 +160,23 @@ def create_ticket(request):
             res_data = response.json()
             print("CinetPay response:", json.dumps(res_data, indent=2))  # Debug
 
+            # ✅ Simulate webhook call for development/testing
+            if settings.DEBUG:
+                test_notify_payload = {
+                    "transaction_id": ticket_code,
+                    "status": "ACCEPTED"
+                }
+                try:
+                    notify_test_response = requests.post(
+                        f"{settings.PRODUCTION_BASE_URL}/payment-notify/",
+                        headers={'Content-Type': 'application/json'},
+                        data=json.dumps(test_notify_payload)
+                    )
+                    print("[TEST NOTIFY] Response code:", notify_test_response.status_code)
+                    print("[TEST NOTIFY] Response body:", notify_test_response.text)
+                except Exception as e:
+                    print("[TEST NOTIFY] Error:", e)
+
             if res_data.get("code") == "201":
                 return redirect(res_data['data']['payment_url'])
             else:
@@ -170,8 +196,6 @@ def create_ticket(request):
     else:
         plans = Plan.objects.all()
         return render(request, 'tickets/create_tickets.html', {'plans': plans})
-
-
 
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
