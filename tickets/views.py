@@ -371,3 +371,24 @@ def custom_login(request):
         form = AuthenticationForm()
 
     return render(request, 'tickets/login.html', {'form': form})
+
+
+
+from django.http import JsonResponse
+from tickets.models import AccessTicket
+
+@csrf_exempt
+def verify_ticket(request):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')  # optional
+
+        try:
+            ticket = AccessTicket.objects.get(ticket_code=username, is_active=True)
+            return JsonResponse({'valid': True})
+        except AccessTicket.DoesNotExist:
+            return JsonResponse({'valid': False, 'message': 'Ticket not found or inactive.'})
+    return JsonResponse({'valid': False, 'message': 'Invalid request method.'})
+
